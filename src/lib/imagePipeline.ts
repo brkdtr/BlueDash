@@ -15,7 +15,14 @@ export async function processPage(file: File): Promise<ExtractedEntry[]> {
 }
 
 export async function fileToImageData(file: File): Promise<ImageData> {
-  const bitmap = await createImageBitmap(file);
+  let bitmap: ImageBitmap;
+  try {
+    bitmap = await createImageBitmap(file);
+  } catch {
+    throw new Error(
+      "Fotograf tarayici tarafindan okunamadi. HEIC ise BlueDash otomatik JPEG'e cevirmeyi dener; hata surerse iPhone'da Ayarlar > Kamera > Bicimler > En Uyumlu secenegiyle yeniden cekin veya fotografi JPEG olarak paylasin."
+    );
+  }
   const maxSide = 1800;
   const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
   const canvas = document.createElement("canvas");
